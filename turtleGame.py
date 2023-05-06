@@ -12,17 +12,16 @@ Another exception to the movement claim is when the player bumps into a wall, in
 import sys
 sys.path.append("/home/matt/.local/lib/python3.10/site-packages/")
 
+import updateList
+updateList.main()
+
 import platform
 import keyboard
 import turtle
 from os import system
 from PathFind import pathing
 from time import sleep
-import lvl1
-import lvl2
-import lvl3
-import lvl4
-import lvl5
+from lvls import *
 
 screen = turtle.Screen()
 screen.setup(width = 550, height = 550)
@@ -98,7 +97,7 @@ def start():
     user.speed(0)
     user.penup()
     user.hideturtle()
-    lvl1.lvl1(user) # Line 26 in lvl1.py
+    x, y = lvl1.lvl1(user) # Line 26 in lvl1.py
     lvl = "lvl1" # Used to print the correct menu
     a = 0
     menu(lvl) # line 76
@@ -154,7 +153,7 @@ def start():
         elif keyboard.is_pressed("r"): # except this, this is to reset
             user.penup()
             user.clear()
-            user.goto(250, 250)
+            user.goto(x, y)
             user.pendown()
             turn = 1
 
