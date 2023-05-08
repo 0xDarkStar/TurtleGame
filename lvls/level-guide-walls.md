@@ -84,7 +84,7 @@ As for the wall function itself, it needs 6 inputs:
 
 If we were to run it using levelTester.py it would look like this:
 
-![Progress so far is a green square on the far right edge with a horizontal line above it](lvlGuideMedia/Progress0.png)
+![Progress so far is a green square on the far right edge with a horizontal line above it; all of which is on a blank canvas.](lvlGuideMedia/Progress0.png)
 
 _If you want to test a level, make sure to change the import from 'import guideWalls' to whatever your level is named.  
 You also need to make sure that the functions called are the same as your level's functions_<br/><br/>
@@ -104,7 +104,7 @@ If not, here are the list of extra things that you can add to your map:
 All of these (excluding the portals) have a lot to do with the next function we will be making. Meanwhile, everything except mirror mode needs to be drawn.
 
 Let me update you on the level's code so far:
-<details>
+<details> <!--- This is the dropdown menu. It ends at the </details> -->
 <summary>Level code and map so far.</summary><br>
 
 It currently looks like:
