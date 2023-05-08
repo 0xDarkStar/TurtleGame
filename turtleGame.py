@@ -28,36 +28,12 @@ screen.setup(width = 550, height = 550)
 
 OS = platform.system()
 
-# Lists
-blueport = [(250, 50), (-100, -250)]
-pinkport = [(-250, 50), (-150, 50)]
-greenport = [(200, 200), (150, 50)]
-purpport = [(0, 50), (150, -250)]
-portals = [blueport, pinkport, greenport, purpport]
-
 #Functions
 def grabPos(turtle): # Grabs the position of the specified turtle
     x = turtle.xcor() # The reason I use this is because I want integers, not floats
     y = turtle.ycor()
     pos = (x, y)
     return pos
-
-
-def findportnum(input, listL): # Find the portal that the player is at
-    a = 0
-    while a < 4: # Cycle through the portal list
-        if input in listL[a]:
-            return a # Player is on a portal, return the index (Line 59 is called after this function when this is the result)
-        else:
-            a += 1
-    if a == 4: # It reached the end of the list
-        a = "duck" # Random string, idk why
-        return a # It returns the string
-
-
-def findport2(input, listL, b): # To find the portal where the player will teleport to
-    a = listL[b].index(input) # assigns "a" to the position of the other portal
-    return a # returns the position
 
 def sysClear(): # Checks which OS the computer is using in order to clear the terminal
     if OS == "Linux" or OS == "Darwin": # Linux or MacOS
@@ -207,21 +183,12 @@ def start():
 
         elif keyboard.is_pressed("t"): # Teleport
             pos = user.pos()
-            b = findportnum(pos, portals) # Line 47
-            if b != "duck": # It was in the list of portals
-                c = findport2(pos, portals, b) # Line 59
-                name = portals[b] # Store the portal coord list as name
-                if c == 0: # Player is at the first portal
-                    port = name[1] # Store the second portal as port
-                    user.penup()
-                    user.goto(port) # Teleport to second portal
-                    user.pendown()
-                elif c == 1: # Player is at the second portal
-                    port = name[0] # Store the first portal as port
-                    user.penup()
-                    user.goto(port) # Teleport to first portal
-                    user.pendown()
-            turn += 1
+            teleported = lvl2.teleport(pos, user)
+            if teleported == False:
+                sleep(.15)
+                turn += 1
+            else:
+                turn += 1
 
         # Lines after this are for making levels
         elif keyboard.is_pressed("n"):
