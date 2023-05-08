@@ -105,7 +105,13 @@ All of these (excluding the portals) have a lot to do with the next function we 
 
 Let me update you on the level's code so far:
 <details>
-<summary>Level code so far.</summary>
+<summary>Level code and map so far.</summary><br>
+
+It currently looks like:
+
+![Image of maze with all the walls drawn and a goal](lvlGuideMedia/Progress1.png)
+
+With the code being:
 
 ```py
 import turtle
@@ -196,4 +202,16 @@ def draw(user): # Function that draws the map
 ```
 </details><br/>
 
-To add one-way doors, you want to add this
+To add one-way doors, you want to add:
+
+```py
+    oneWay(75, -125, 90, walls, "white")
+```
+
+With each of the inputs being:
+1. x-coordinate
+2. y-coordinate
+3. heading
+4. turtle to draw it
+5. color for the door
+
