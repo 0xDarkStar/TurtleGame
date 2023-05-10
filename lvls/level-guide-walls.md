@@ -29,7 +29,7 @@ Now you should have a file that looks similar to this:
 ```py
 import turtle
 from time import sleep # You can do "import time" but that means you have to type "time.sleep()" everytime you use sleep
-from lvlParts import *
+from .lvlParts import *
 
 def draw(user): # Function that draws the map
     global walls, wallDots # Makes everything (excluding user) in the function global
@@ -116,7 +116,7 @@ With the code being:
 ```py
 import turtle
 from time import sleep # You can do "import time" but that means you have to type "time.sleep()" everytime you use sleep
-from lvlParts import *
+from .lvlParts import *
 
 def draw(user): # Function that draws the map
     global walls, wallDots # Makes everything (excluding user) in the function global
