@@ -3,6 +3,8 @@ def main():
     import fileinput
     from lvls import __all__
 
+    ignore = ["__init__", "__pycache__", "guideWalls", "level-guide-walls.md", "levelTester", "lvlGuideMedia"]
+
     # Get the absolute path of the script
     script_path = os.path.abspath(__file__)
 
@@ -30,7 +32,7 @@ def main():
                 # Add any missing files to the list
                 for f in files:
                     f = f.replace(".py", "")
-                    if f == "__init__" or f == "__pycache__":
+                    if f in ignore:
                         continue
                     elif f not in all_files:
                         all_files.append(f)
