@@ -1,112 +1,55 @@
 import turtle
 from time import sleep
+from .lvlParts import drawMap, Collision
+from .movement import movement
 
-wallDots = []
-
-def wall(go1, go2, head, walls, distance): #little function to make the code for drawing walls a bit smaller
-    walls.penup()
-    walls.goto(go1, go2)
-    walls.setheading(head)
-    walls.pendown()
-    walls.forward(distance)
-
-def goal(x, y, walls):
-    walls.color("light green")
-    wall(x, y, 0, walls, 550) # Goal
-    walls.color("black")
-
-    # border
-    walls.penup()
-    walls.goto(275, 275)
-    walls.setheading(270)
-    walls.hideturtle()
-    walls.pendown()# Border
-    walls.forward(550)
-    walls.right(90)
-    walls.forward(550)
-    walls.right(90)
-    walls.forward(550)
-    walls.right(90)
-    walls.forward(550) # Border done
-
-def chevron(x, y, angle, direction, chevrons):
-    chevrons.setheading(direction)
-    chevrons.forward(10.33)
-    chevrons.pendown()
-    chevrons.setheading(direction - 180)
-    x1 = chevrons.xcor()
-    y1 = chevrons.ycor()
-    chevrons.right(angle)
-    chevrons.forward(8)
-    chevrons.left(angle)
-    chevrons.forward(4)
-    chevrons.right(180)
-    chevrons.right(angle)
-    chevrons.forward(8)
-
-    chevrons.penup()
-    chevrons.goto(x1, y1)
-    chevrons.pendown()
-    chevrons.setheading(direction - 180)
-    chevrons.left(angle)
-    chevrons.forward(8)
-    chevrons.right(angle)
-    chevrons.forward(4)
-    chevrons.right(180)
-    chevrons.left(angle)
-    chevrons.forward(8)
-    
-    chevrons.penup()
-    chevrons.goto(x, y)
-
-    chevrons.setheading(direction)
-    chevrons.forward(1.66)
-    chevrons.pendown()
-    chevrons.setheading(direction - 180)
-    x1 = chevrons.xcor()
-    y1 = chevrons.ycor()
-    chevrons.right(angle)
-    chevrons.forward(8)
-    chevrons.left(angle)
-    chevrons.forward(4)
-    chevrons.right(180)
-    chevrons.right(angle)
-    chevrons.forward(8)
-
-    chevrons.penup()
-    chevrons.goto(x1, y1)
-    chevrons.pendown()
-    chevrons.setheading(direction - 180)
-    chevrons.left(angle)
-    chevrons.forward(8)
-    chevrons.right(angle)
-    chevrons.forward(4)
-    chevrons.right(180)
-    chevrons.left(angle)
-    chevrons.forward(8)
-    
-    chevrons.penup()
-    chevrons.goto(x, y)
-
-def conveyor(x, y, angle, direction, distance, chevrons):
-    chevrons.goto(x, y)
-    chevrons.setheading(direction)
-    a = 0
-    while a < distance:
-        x = chevrons.xcor()
-        y = chevrons.ycor()
-        chevron(x, y, angle, direction, chevrons)
-        chevrons.setheading(direction)
-        chevrons.forward(50)
-        a += 1
-
-def lvl5(user):
-    global trapT, conveyors, walls, userCopy
+def lvl5(user, pen):
+    global walls, userCopy, wallDots
     walls = turtle.Turtle()
+    wallDots = []
     walls.speed(0)
     walls.hideturtle()
 
-    goal(-275, 0, walls)
+    
+
+    '''Map guide:
+    0 = empty
+    1 = wall
+    2 = user spawn
+    3 = goal
+    4 = portals
+    5 = one-way doors
+    6 = conveyors
+    7 = traps
+    8 = enemy spawn
+    9 = userCopy spawn'''
+
+    mazeMap = [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 9, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+        [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1],
+        [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+        [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1],
+        [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1],
+        [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    ]
+    drawMap(mazeMap, walls)
 
     userCopy = turtle.Turtle()
     userCopy.penup()
@@ -128,70 +71,9 @@ def lvl5(user):
     user.pendown()
     user.setheading(90)
 
-    return userCopy
+    collision = Collision(mazeMap, user, walls, userCopy)
 
-def clearMap():
-    trapT.clear()
-    conveyors.clear()
+    menu = "/-------------\ \n| w = up      |\n| d = right   |\n| a = left    |\n| s = down    |\n| ~ = quit    |\n| r = reset   |\n|             |\n\-------------/\n"
+    reset = [(0, -250), (-150, 250)]
 
-def collision(turtles, pen, door): # Check if user is in a wall or out of bounds
-    xpos = turtles.xcor()
-    ypos = turtles.ycor()
-    pos = (xpos,ypos)
-    xposCopy = userCopy.xcor()
-    yposCopy = userCopy.ycor()
-    posCopy = (xposCopy,yposCopy)
-    if ypos <= -275 or ypos >= 275:
-        print("Don't try to leave my maze.", end = "\r")
-        sleep(1)
-        print("                                                            ", end = "\r")
-        turtles.back(25)
-    elif xpos <= -275 or xpos >= 275:
-        print("Don't try to leave my maze.", end = "\r")
-        sleep(1)
-        print("                                                            ", end = "\r")
-        turtles.back(25)
-    if yposCopy <= -275 or yposCopy >= 275:
-        print("Don't try to get your copy to leave my maze.", end = "\r")
-        sleep(1)
-        print("                                                            ", end = "\r")
-        userCopy.back(25)
-    elif xposCopy <= -275 or xposCopy >= 275:
-        print("Don't try to get your copy to leave my maze.", end = "\r")
-        sleep(1)
-        print("                                                            ", end = "\r")
-        userCopy.back(25)
-    elif pos in wallDots and posCopy in wallDots:
-        print("Both of you hit a wall.", end = "\r")
-        sleep(1)
-        print("                                                            ", end = "\r")
-        turtles.back(25)
-        userCopy.back(25)
-    elif pos in wallDots:
-        print("You hit a wall.", end = "\r")
-        sleep(1)
-        print("                                                            ", end = "\r")
-        turtles.back(25)
-    elif posCopy in wallDots:
-        print("Your copy hit a wall.", end = "\r")
-        sleep(1)
-        print("                                                            ", end = "\r")
-        userCopy.back(25)
-    elif pos == posCopy: # Checks if they made it to the goal
-        Win = turtle.Turtle()
-        Win.hideturtle()
-        Win.goto(0,0)
-        Win.write("YOU WON", False, align="center", font = ("Arial", 40, "bold") ) # Turtle is spawned to write "YOU WON" in center of screen
-        sleep(2)
-        door = "lvl6"
-        pen.clear()
-        turtles.clear()
-        walls.clear()
-        userCopy.clear()
-        clearMap()
-        Win.clear()
-        turtles.penup()
-        turtles.hideturtle()
-        return door
-    else:
-        return door  
+    movement(user, pen, menu, collision, 0, 0, reset, userCopy)
