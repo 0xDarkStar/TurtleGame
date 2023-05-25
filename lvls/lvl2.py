@@ -1,5 +1,6 @@
 import turtle
 from time import sleep
+from .movement import movement
 
 def wall(go1, go2, head, walls): #little function to make the code for drawing walls a bit smaller
     walls.penup()
@@ -66,7 +67,7 @@ def portal(color, x, y, portalT):
         a += 1
     portalT.end_fill()
 
-def lvl2(user):
+def lvl2(user, pen):
     global portalT, walls
     walls = turtle.Turtle()
     walls.speed(0)
@@ -190,11 +191,15 @@ def lvl2(user):
 
     user.speed(0)
     user.showturtle()
-    user.goto(-250, 250) # true start
+    reset = (-250, 250)
+    user.goto(reset) # true start
     #user.goto(-250, -200) # just to test
     user.setheading(270)
     user.pendown()
     user.speed(1)
+    menu = "/-------------\ \n| w = up      |\n| d = right   |\n| a = left    |\n| s = down    |\n| ~ = quit    |\n| r = reset   |\n| t = teleport|\n\-------------/\n"
+
+    movement(user, pen, menu, collision, teleport, 0, reset, 0)
 
 wallDots = [(175, -75), (175, -100), (175, -125), (175, -150), (175, -175), (175, -200), (175, -225), (175, -250), (225, -225), (225, -200), (225, -175), (225, -150), (225, -125), (225, -100), (225, -75), (225, -50), (225, -25), (200, -25), (175, -25), (150, -25), (125, -25),(125, -250), (125, -225), (125, -200), (125, -175), (125, -150), (125, -125), (125, -100), (125, -75), (125, -50), (125, -25), (225, 25), (225, 50), (225, 75), (225, 100), (225, 125), (225, 150), (225, 175), (225, 200), (225, 225), (250, 25), (200, 225), (175, 225), (150, 225), (125, 225), (100, 225), (75, 225), (25, 225), (175, 200), (175, 175), (175, 150), (175, 125), (175, 100), (175, 75), (175, 50), (175, 25), (150, 25), (125, 25), (125, 50), (125, 75), (125, 100), (125, 125), (125, 150), (125, 175), (100, 125), (75, 125), (50, 125), (25, 125), (0, 125), (-25, 125), (100, 175), (75, 175), (25, 175), (0, 175), (-25, 175), (-25, 200), (-25, 225), (-50, 225), (-75, 225), (-100, 225), (-125, 225), (-125, 250), (-125, 200), (-125, 175), (-125, 150), (-125, 125), (-100, 125), (-75, 125), (-75, 150), (-75, 175), (-75, 100), (-75, 75), (-75, 50), (-75, 25), (-75, 0), (-75, -25), (-50, -25), (-25, -25), (0, -25), (25, -25), (25, 0), (25, 25), (25, -50), (25, -75), (25, -100), (25, -125), (25, -150), (25, -175), (50, -175), (75, -175), (75, -150), (75, -125), (75, -100), (75, -75), (75, -50), (75, -25), (75, 0), (75, 25), (75, 50), (75, 75), (50, 75), (25, 75), (0, 75), (-25, 75), (-25, 50), (-25, 25), (0, 25), (50, 175), (50, 225), (75, -200), (75, -225), (50, -225), (25, -225), (0, -225), (-25, -225), (0, -175), (-25, -175), (-50, -175), (-75, -175), (-100, -175), (-125, -175), (-150, -175), (-175, -175), (-125, -150), (-125, -125), (-125, -100), (-125, -75), (-125, -50), (-125, -25), (-125, 0), (-125, 25), (-125, 50), (-125, 75), (-150, 75), (-175, 75), (-175, 50), (-175, 25), (-175, 0), (-175, -25), (-175, -50), (-175, -75), (-200, -75), (-225, -75), (-250, -75), (-250, 75), (-225, 75), (-225, 50), (-225, 25), (-225, 0), (-225, -25), (0, -125), (-25, -125), (-50, -125), (-75, -125), (-75, -100), (-75, -75), (-50, -75), (-25, -75), (-175, -125), (-200, -125), (-225, -125), (-225, -150), (-225, -175), (-225, -200), (-225, -225), (-200, -225), (-175, -225), (-150, -225), (-125, -225), (-100, -225), (-75, -225), (-75, -200), (-75, -250), (-225, 250), (-225, 225), (-225, 200), (-225, 175), (-175, 225), (-175, 200), (-175, 175), (-175, 150), (-175, 125), (-200, 125), (-225, 125), (-250, 125)]
 
@@ -228,7 +233,7 @@ def teleport(input, user): # Find the portal that the player is at
     else:
         return False
 
-def collision(turtles, pen, door): # Check if user is in a wall or out of bounds
+def collision(turtles, pen, door, prevPos): # Check if user is in a wall or out of bounds
     xpos = turtles.xcor()
     ypos = turtles.ycor()
     pos = (xpos,ypos)
@@ -247,6 +252,23 @@ def collision(turtles, pen, door): # Check if user is in a wall or out of bounds
         sleep(1)
         print("                                          ", end = "\r")
         turtles.back(25)
+    elif pos == (0, -50):
+        if door != "open":
+            oneWay(-25, -75, 0, walls, "light green")
+            door = "open"   
+    elif pos == (0, -100):
+        if door != "closed":
+            oneWay(-25, -75, 0, walls, "red")
+            door = "closed"
+    elif pos == (0, -75):
+        if turtles.heading() == 270:
+            turtles.forward(25)
+        elif turtles.heading() == 90:
+            turtles.back(25)
+        else:
+            print("I don't know how you went into the door through a wall or sideways.\nThere should be no way.", end = "\r")
+            sleep(1)
+            print("                                          ", end = "\r")
     elif xpos <= 24 and xpos >= -24 and ypos <= 24 and ypos >= -24: # Checks if they made it to the goal
         Win = turtle.Turtle()
         Win.hideturtle()
@@ -262,25 +284,4 @@ def collision(turtles, pen, door): # Check if user is in a wall or out of bounds
         turtles.penup()
         turtles.hideturtle()
         return door
-    elif pos == (0, -50):
-        if door != "open":
-            oneWay(-25, -75, 0, walls, "light green")
-            door = "open"
-        return door      
-    elif pos == (0, -100):
-        if door != "closed":
-            oneWay(-25, -75, 0, walls, "red")
-            door = "closed"
-        return door
-    elif pos == (0, -75):
-        if turtles.heading() == 270:
-            turtles.forward(25)
-        elif turtles.heading() == 90:
-            turtles.back(25)
-        else:
-            print("I don't know how you went into the door through a wall or sideways.\nThere should be no way.", end = "\r")
-            sleep(1)
-            print("                                          ", end = "\r")
-
-    else:
-        return door
+    return door
