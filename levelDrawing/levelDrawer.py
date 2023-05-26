@@ -146,8 +146,12 @@ def delSpace(user):
     user.goto(x, y)
 
 def saveMap():
+    map = str(mazeMap)
+    map = map.replace("[[", "[\n    [")
+    map = map.replace("], [", "],\n    [")
+    map = map.replace("]]", "]\n]")
     with open("mazeMap.txt", "w") as file:
-        file.write(f"mazeMap = {str(mazeMap)}")
+        file.write(f"mazeMap = {map}")
 
 def drawGrid():
     grid = turtle.Turtle()
