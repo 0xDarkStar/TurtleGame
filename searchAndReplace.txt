@@ -1,0 +1,68 @@
+Let's say that you made a function and used it like 50 times. And each time you used it, you had different arguments.
+Now let's say you add a argument that is required by the function. You won't be able to search for it by doing:
+
+"myFunc(var1, va2, var3, etc)"
+
+You might as well just go to each one individually and change it yourself!
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+What you need to do is search for "myFunc", grab any arguments you may have, and add your new argument to it.
+To do what you need, you should search using regular expressions. What this would look like is:
+
+"myFunc\((.*?)\)"
+
+What that does is search for any instance of "myFunc("something in here")". If you were to use this, then you can replace all of your functions to use the new one!
+But wait! How do we keep the arguments the same? It is actually quite simple. All we need to do is place $1 to represent the arguments (or if you got several separate parts, use $#, with the # being what ever number you're on after increasing by one).
+This would look like:
+
+"myFunc($1, newArg)"
+
+But now we have a new problem! Whatever functions you might've modified before are now being modified again. Meaning that if you had:
+
+"myFunc(9, "ha", True)" (True being the new argument)
+
+After replace it using the above example, it would look like this:
+
+"myFunc(9, "ha", True, True)"
+
+This is awful! We don't want that!
+There's another simple solution though, we tell it to ignore instances where the new argument is already there.
+We do that by searching:
+
+"myFunc\((?![^)]*newArg[^)]*\))(.*?)\)"
+
+It is quite confusing, so lets break it down.
+
+1. myFunc\( = searches for any instances where "myFunc(" is written.
+2. (?![^)]*newArg[^)]*\)):
+    1. (?!...) = negative lookahead assertion. You put what you don't want in here. If you wanted to ignore instances of the function where it had "aareq", you would
+                use this to do that.
+    2. [^)]* = matches characters that aren't a ")". This is to grab anything that might exist before or after the new argument.
+    3. newArg = this is what we want to avoid. Modify this if you want to avoid something else
+    4. \)) = The literal character ")" and the closing parenthesis for the assertion.
+    Everything in this sublist is what the negative lookahead assertion is looking to avoid. What it avoids could be anything, as long as it has the newArg.
+3. (.*?)\) = look at all the arguments and for the closing parenthesis.
+
+Now by using this regular expression to search we can now add the new argument you added to all the instances of the function at once!
+Oh, you also want to make sure the argument you are putting into the functions also have that exact spelling for the argument. That's confusing...
+This should help you understand:
+
+You have myFunc defined, and it calls for multiple arguments (duh).
+It looks like this:
+"def myFunc(arg1, arg2):..."
+Now you added the new argument! The def statement for the function now looks like this:
+"def myFunc(arg1, arg2, duck):..."
+Cool, but the variable you would be putting in that argument isn't named "duck", but instead is named... oh I don't know... "Cat"?
+
+What your search argument might look like is this:
+"myFunc\((?![^)]*Cat[^)]*\))(.*?)\)"
+Great, now you ignore all the functions that you already modified manually, but do you know what instance of the function doesn't have "Cat"?
+The def statement for it.
+When replacing all, it would also add "Cat" as an argument for the def statement, turning it from this:
+"def myFunc(arg1, arg2, duck):..."
+into this:
+"def myFunc(arg1, arg2, duck, Cat):..."
+This is not good! With this, it would throw an error because you don't have a fourth argument for any instance of it.
+Best to keep the argument name the same as the variable name to avoid this problem. Keeping the two named the same thing also makes it easier to understand.
+People won't have to remember that "Cat" is referred to as "duck" in the function, and possibly referred to as something else in other functions.
